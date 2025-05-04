@@ -187,3 +187,5 @@ Special thanks to Er. Manil Vaidya for guidance throughout this research project
 *This whitepaper is based on research conducted at Nepal College of Information Technology, Department of Computer Engineering, as part of the Machine Learning course work.*
 
 *For source code and data files, visit: [Moving-Average-Forecasting](https://github.com/vijaybartaula/Moving-Average-Forecasting)*
+
+> "The market speaks in trends; accuracy listens closely."

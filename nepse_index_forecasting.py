@@ -27,7 +27,8 @@ def calculate_sma(data, window):
     return data['Index'].rolling(window=window).mean()
 
 def calculate_wma(data, window):
-    weights = np.array([1, 2, 4, 8])  # Weighting factors
+    # Dynamically generate weights based on window size
+    weights = np.arange(1, window + 1)  # Create weights [1, 2, 3, ..., window]
     wma = data['Index'].rolling(window=window).apply(lambda x: np.dot(x, weights) / weights.sum(), raw=True)
     return wma
 
@@ -48,7 +49,7 @@ df['EMA'] = calculate_ema(df, alpha)
 # Predict for Jestha (i.e., forecast the missing value)
 # For SMA, WMA, and EMA for Jestha
 df['SMA'].iloc[-1] = df['SMA'].iloc[-window:].mean()  # Simple prediction for SMA
-df['WMA'].iloc[-1] = np.average(df['Index'][-window:], weights=np.array([1, 2, 4, 8]))  # Weighted average prediction for WMA
+df['WMA'].iloc[-1] = np.average(df['Index'][-window:], weights=np.arange(1, window + 1))  # Weighted average prediction for WMA
 df['EMA'].iloc[-1] = df['EMA'].iloc[-2] + alpha * (df['Index'].iloc[-2] - df['EMA'].iloc[-2])  # Forecasted EMA using previous EMA
 
 # Calculate errors and squared errors for each month
@@ -86,32 +87,6 @@ Based on the MSE analysis, the **WMA** method emerged as the most accurate forec
 ✅ **Best Method Based on MSE**: **WMA (Weighted Moving Average)**
 """)
 
-# Add key findings and insights
-st.subheader("📝 Key Findings & Insights")
-st.markdown("""
-### Key Insights:
-1. **Forecasting Accuracy**:
-   - The **Mean Squared Error (MSE)** values indicate that the **WMA (Weighted Moving Average)** model provided the best forecasting accuracy, with the lowest MSE. This suggests that the WMA method was most responsive to recent trends and fluctuations in the NEPSE index.
-   - The **SMA (Simple Moving Average)** method, while easy to implement, had a higher MSE, indicating that it may not be as effective in capturing recent market dynamics.
-   - The **EMA (Exponential Moving Average)** method performed similarly to SMA in terms of error but exhibited a tendency to smooth the data too much, resulting in less accurate forecasts during periods of volatility.
-
-2. **Performance of Forecasting Methods**:
-   - **SMA**: A simple and widely used technique, but it lags behind other methods, especially when there is significant fluctuation in the index.
-   - **WMA**: The most effective in this case due to its ability to weigh recent data more heavily, providing a more responsive forecast.
-   - **EMA**: While it is effective in smoothing out fluctuations, it may not always perform well in highly volatile data sets, as it struggles to adjust quickly to recent trends.
-
-3. **Forecast for Jestha**:
-   - Forecasted values for **Jestha** (the missing data point) were quite consistent across all three methods, reflecting a stabilization of the NEPSE index. This suggests that the index may be moving towards a more stable phase, based on the historical trend.
-
-4. **Error Distribution**:
-   - The **WMA** method exhibited the smallest squared errors, reinforcing its strength in tracking the index's recent movements and fluctuations. This makes it the most reliable model for short-term forecasting in this scenario.
-
-### Conclusion:
-- **WMA (Weighted Moving Average)** is the most accurate and effective method for forecasting the NEPSE index based on this analysis.
-- **SMA (Simple Moving Average)** and **EMA (Exponential Moving Average)**, while still useful, may not provide as accurate results, especially in volatile or rapidly changing markets.
-
-""")
-
 # Plot forecast chart
 fig, ax = plt.subplots(figsize=(12, 6))
 ax.plot(df['Month'], df['Index'], label='Actual Index', color='blue', marker='o')
@@ -146,4 +121,28 @@ st.dataframe(
     .highlight_null(color='lightgray')
 )
 
-st.info("Note: SMA, WMA, and EMA values for Jestha are forecasted values.")
+# Move the Key Findings & Insights section lower
+st.subheader("📝 Key Findings & Insights")
+st.markdown("""
+### Key Insights:
+1. **Forecasting Accuracy**:
+   - The **Mean Squared Error (MSE)** values indicate that the **WMA (Weighted Moving Average)** model provided the best forecasting accuracy, with the lowest MSE. This suggests that the WMA method was most responsive to recent trends and fluctuations in the NEPSE index.
+   - The **SMA (Simple Moving Average)** method, while easy to implement, had a higher MSE, indicating that it may not be as effective in capturing recent market dynamics.
+   - The **EMA (Exponential Moving Average)** method performed similarly to SMA in terms of error but exhibited a tendency to smooth the data too much, resulting in less accurate forecasts during periods of volatility.
+
+2. **Performance of Forecasting Methods**:
+   - **SMA**: A simple and widely used technique, but it lags behind other methods, especially when there is significant fluctuation in the index.
+   - **WMA**: The most effective in this case due to its ability to weigh recent data more heavily, providing a more responsive forecast.
+   - **EMA**: While it is effective in smoothing out fluctuations, it may not always perform well in highly volatile data sets, as it struggles to adjust quickly to recent trends.
+
+3. **Forecast for Jestha**:
+   - Forecasted values for **Jestha** (the missing data point) were quite consistent across all three methods, reflecting a stabilization of the NEPSE index. This suggests that the index may be moving towards a more stable phase, based on the historical trend.
+
+4. **Error Distribution**:
+   - The **WMA** method exhibited the smallest squared errors, reinforcing its strength in tracking the index's recent movements and fluctuations. This makes it the most reliable model for short-term forecasting in this scenario.
+
+### Conclusion:
+- **WMA (Weighted Moving Average)** is the most accurate and effective method for forecasting the NEPSE index based on this analysis.
+- **SMA (Simple Moving Average)** and **EMA (Exponential Moving Average)**, while still useful, may not provide as accurate results, especially in volatile or rapidly changing markets.
+
+""")
